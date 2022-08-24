@@ -1,6 +1,6 @@
 import React from 'react';
 import Header from './components/Header';
-import Switches from './components/Switches';
+import Switches from './containers/Switches';
 
 const App = () => {
   return (
