@@ -6,7 +6,7 @@ import Switches from './containers/Switches';
 
 const App = () => {
   const socket = io();
-  
+
   return (
     <div className="App">
       <Header />

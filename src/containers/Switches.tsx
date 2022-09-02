@@ -28,6 +28,11 @@ const Switches: React.FC<SwitchInterface> = ({socket}) => {
     socket.emit('s3', s3)
   }
 
+  const s4Handler = () => {
+    sets4(!s4)
+    socket.emit('s4', s4)
+  }
+
   return (
     <div className="switches">
       <FormControlLabel
@@ -46,7 +51,7 @@ const Switches: React.FC<SwitchInterface> = ({socket}) => {
         labelPlacement="start"
       />
       <FormControlLabel
-        control={<Switch checked={s4} onChange={() => sets4(!s4)} />}
+        control={<Switch checked={s4} onChange={s4Handler} />}
         label="Switch 4"
         labelPlacement="start"
       />
