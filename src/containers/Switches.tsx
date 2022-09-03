@@ -3,58 +3,50 @@ import { Socket } from 'socket.io-client';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 
-interface SwitchInterface {
+interface SwitchesInterface {
   socket: Socket;
 }
 
-const Switches: React.FC<SwitchInterface> = ({socket}) => {
-  const [s1, sets1] = useState(false);
-  const [s2, sets2] = useState(false);
-  const [s3, sets3] = useState(false);
-  const [s4, sets4] = useState(false);
+interface SwitchStateInterface {
+  id: number;
+  switchNumber: number;
+  switchName: number;
+  switchState: boolean;
+}
 
-  const s1Handler = () => {
-    sets1(!s1)
-    socket.emit('s1', s1)
-  }
+const Switches: React.FC<SwitchesInterface> = ({ socket }) => {
+  const [switchState, setSwitchState] = useState<SwitchStateInterface[]>([]);
 
-  const s2Handler = () => {
-    sets2(!s2)
-    socket.emit('s2', s2)
-  }
+  // Gets all the switches states
+  socket.on('state', (data) => {
+    setSwitchState(data);
+  })
 
-  const s3Handler = () => {
-    sets3(!s3)
-    socket.emit('s3', s3)
-  }
-
-  const s4Handler = () => {
-    sets4(!s4)
-    socket.emit('s4', s4)
-  }
+  // Toggles the switch/relay
+  const relayHandler = (id: number) => {
+    const copyOfSwitchState = [...switchState];
+    copyOfSwitchState[id].switchState = !copyOfSwitchState[id].switchState;
+    setSwitchState(copyOfSwitchState);
+    socket.emit(id.toString(), copyOfSwitchState[id].switchState);
+  };
 
   return (
     <div className="switches">
-      <FormControlLabel
-        control={<Switch checked={s1} onChange={s1Handler} />}
-        label="Switch 1"
-        labelPlacement="start"
-      />
-      <FormControlLabel
-        control={<Switch checked={s2} onChange={s2Handler} />}
-        label="Switch 2"
-        labelPlacement="start"
-      />
-      <FormControlLabel
-        control={<Switch checked={s3} onChange={s3Handler} />}
-        label="Switch 3"
-        labelPlacement="start"
-      />
-      <FormControlLabel
-        control={<Switch checked={s4} onChange={s4Handler} />}
-        label="Switch 4"
-        labelPlacement="start"
-      />
+      {switchState.map((relay) => {
+        return (
+          <FormControlLabel
+          key={relay.id}
+            control={
+              <Switch
+                checked={!relay.switchState}
+                onChange={() => relayHandler(relay.id)}
+              />
+            }
+            label={`Switch ${relay.switchNumber}`}
+            labelPlacement="start"
+          />
+        );
+      })}
     </div>
   );
 };
